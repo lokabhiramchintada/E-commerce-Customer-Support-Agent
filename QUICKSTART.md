@@ -72,9 +72,37 @@ python main.py
 ## Using the Application
 
 1. Open your browser to `http://localhost:8000`
-2. Type a customer message in the text area
-3. Click "Send Message" or press Enter
-4. View the AI-generated response and metadata
+2. **View Sample Orders**: The UI displays 6 sample orders you can ask about
+3. Type a customer message or click an example button
+4. Click "Send Message" or press Enter
+5. View the AI-generated response with real order data and metadata
+
+### 💡 Try These Questions with Real Data
+
+The system includes 8 sample orders with complete details. Try questions like:
+
+- **"Where is my order ORD-12345?"** - Get tracking info and delivery status
+- **"What's the status of order ORD-23456?"** - Already delivered!
+- **"I want to return order ORD-78901"** - Refund already in progress
+- **"Cancel my order ORD-34567"** - Currently processing
+- **"My order ORD-45678 hasn't arrived"** - Get tracking number
+
+The AI agent will:
+1. Extract the order ID from your message
+2. Look up real order data from the database
+3. Provide accurate, context-aware responses with specific details
+
+### 🗃️ Available Sample Data
+
+- **8 Orders** with various statuses (In Transit, Delivered, Processing, etc.)
+- **10 Products** (Electronics & Accessories)
+- **5 Customers** with order history
+
+You can also access the data via API:
+```bash
+curl http://localhost:8000/api/orders
+curl http://localhost:8000/api/orders/ORD-12345
+```
 
 ## Testing the Agent Directly
 
@@ -103,15 +131,24 @@ This will run test messages through the workflow and display results.
 
 ## API Endpoints
 
+### Support Agent
 - `GET /` - Web UI
 - `POST /api/support` - Process customer message
-- `GET /api/health` - Health check
 - `GET /api/intents` - List supported intent types
 
-## Example Messages to Try
+### Data Access
+- `GET /api/orders` - Get all orders with summary
+- `GET /api/orders/{order_id}` - Get specific order details  
+- `GET /api/products` - Get all products
+- `GET /api/customers` - Get all customers
+- `GET /api/health` - Health check
 
-- "Where is my order #12345? It's been 2 weeks!"
-- "I received a broken phone. This is unacceptable!"
-- "Can I get a refund for order ORD-98765?"
-- "How do I cancel my order before it ships?"
-- "I was charged twice for the same order"
+## Example Messages to Try (With Real Order IDs!)
+
+- "Where is my order ORD-12345? It's been 2 weeks!"
+- "What's the status of order ORD-23456?"
+- "I want to return the speaker from order ORD-78901"
+- "Can I cancel order ORD-34567? I ordered by mistake"
+- "My order ORD-45678 hasn't arrived yet"
+
+**All these orders exist in the database and will return real data!**

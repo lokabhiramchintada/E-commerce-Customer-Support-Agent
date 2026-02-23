@@ -356,14 +356,47 @@
             </div>
 
             <div class="examples">
-                <h3>💡 Try these examples:</h3>
+                <h3>💡 Try these examples with real orders:</h3>
                 <div class="example-buttons">
-                    <button class="example-btn" onclick="fillExample('Where is my order #12345? It has been 2 weeks!')">📦 Delivery inquiry</button>
-                    <button class="example-btn" onclick="fillExample('I received a broken phone yesterday. I need a replacement immediately.')">📱 Damaged item</button>
-                    <button class="example-btn" onclick="fillExample('Can I get a refund for order ORD-98765?')">💰 Refund request</button>
-                    <button class="example-btn" onclick="fillExample('How do I cancel my order before it ships?')">❌ Cancellation</button>
-                    <button class="example-btn" onclick="fillExample('I was charged twice for the same order')">💳 Payment issue</button>
+                    <button class="example-btn" onclick="fillExample('Where is my order ORD-12345? It has been 2 weeks!')">📦 Track ORD-12345</button>
+                    <button class="example-btn" onclick="fillExample('I want to return the speaker from order ORD-78901. It does not work properly.')">📱 Refund ORD-78901</button>
+                    <button class="example-btn" onclick="fillExample('Can I cancel order ORD-34567? I ordered by mistake.')">❌ Cancel ORD-34567</button>
+                    <button class="example-btn" onclick="fillExample('My order ORD-23456 was delivered but items are missing')">📦 Issue ORD-23456</button>
+                    <button class="example-btn" onclick="fillExample('What is the status of order ORD-45678?')">🔍 Status check</button>
                 </div>
+            </div>
+
+            <div class="examples" style="margin-top: 20px; background: #e7f3ff; border-left: 4px solid #667eea;">
+                <h3>📊 Sample Database - Ask about these orders:</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-top: 15px;">
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-12345</strong> - In Transit<br>
+                        <small>Smart Fitness Watch ($199.99)</small>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-23456</strong> - Delivered<br>
+                        <small>Headphones + Cable ($104.98)</small>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-34567</strong> - Processing<br>
+                        <small>Keyboard + Mouse ($189.98)</small>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-45678</strong> - Shipped<br>
+                        <small>2x Laptop Backpack ($99.98)</small>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-78901</strong> - Refund Requested<br>
+                        <small>Bluetooth Speaker ($64.99)</small>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 6px; font-size: 13px;">
+                        <strong>ORD-89012</strong> - Cancelled<br>
+                        <small>2x Headphones ($159.98)</small>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; font-size: 13px; color: #495057;">
+                    💬 <strong>You can ask questions about any of these orders!</strong> The AI agent will look up real data and provide accurate answers.
+                </p>
             </div>
         </div>
     </div>

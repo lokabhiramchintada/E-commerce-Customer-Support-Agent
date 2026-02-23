@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import uvicorn
 from agent import process_customer_message
+from data import ORDERS, PRODUCTS, CUSTOMERS, get_order, format_order_details, get_order_summary
 import os
 from datetime import datetime
 
@@ -118,6 +119,43 @@ async def get_supported_intents():
                 "description": "General questions, account issues, other"
             }
         ]
+    }
+
+
+@app.get("/api/orders")
+async def get_all_orders():
+    """Get list of all orders in the database"""
+    return {
+        "orders": list(ORDERS.values()),
+        "total": len(ORDERS),
+        "summary": get_order_summary()
+    }
+
+
+@app.get("/api/orders/{order_id}")
+async def get_order_details(order_id: str):
+    """Get details of a specific order"""
+    order = get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail=f"Order {order_id} not found")
+    return order
+
+
+@app.get("/api/products")
+async def get_all_products():
+    """Get list of all products"""
+    return {
+        "products": list(PRODUCTS.values()),
+        "total": len(PRODUCTS)
+    }
+
+
+@app.get("/api/customers")
+async def get_all_customers():
+    """Get list of all customers"""
+    return {
+        "customers": list(CUSTOMERS.values()),
+        "total": len(CUSTOMERS)
     }
 
 

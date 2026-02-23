@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import os
 from dotenv import load_dotenv
+from data import get_order, format_order_details, ORDERS, PRODUCTS, CUSTOMERS
 
 # Load environment variables
 load_dotenv()
@@ -30,6 +31,7 @@ class SupportState(TypedDict):
     response: str
     confidence: float
     order_id: str | None
+    order_data: dict | None
 
 
 # Issue types we support
@@ -108,10 +110,17 @@ ORDER_ID: [id or none]"""
 def route_to_handler(state: SupportState) -> SupportState:
     """
     Route the message to the appropriate handler based on intent
-    This is where you would integrate with your actual backend systems
+    Look up order data if order ID was detected
     """
-    # In a real system, this would call different microservices or APIs
-    # For demo purposes, we just mark that routing happened
+    order_id = state.get("order_id")
+    order_data = None
+    
+    if order_id:
+        # Try to find order in database
+        order_data = get_order(order_id)
+        if order_data:
+            state["order_data"] = order_data
+    
     return state
 
 
@@ -122,6 +131,7 @@ def generate_response(state: SupportState) -> SupportState:
     intent = state["intent"]
     message = state["message"]
     order_id = state.get("order_id", "not provided")
+    order_data = state.get("order_data")
     
     # Create intent-specific system prompts
     handlers = {
@@ -151,11 +161,25 @@ Provide helpful, accurate information and guide the customer to the right resour
     
     system_prompt = handlers.get(intent, handlers["general_inquiry"])
     
-    user_prompt = f"""Customer message: "{message}"
+    # Build context with order data if available
+    context = f"""Customer message: "{message}"
 Order ID: {order_id}
+"""
+    
+    if order_data:
+        context += f"""
 
-Generate a helpful, empathetic, and professional response. Keep it clear and concise (3-5 sentences).
-Include specific action items or next steps when relevant."""
+REAL ORDER DATA FROM DATABASE:
+{format_order_details(order_data)}
+
+Use this actual order information in your response. Be specific about status, tracking, delivery dates, and items.
+"""
+    else:
+        context += "\nNote: No order found in database. Provide general guidance and ask for order confirmation."
+    
+    context += "\n\nGenerate a helpful, empathetic, and professional response. Keep it clear and concise (3-5 sentences).\nInclude specific action items or next steps when relevant."
+    
+    user_prompt = context
 
     response = llm.invoke([
         SystemMessage(content=system_prompt),
@@ -249,7 +273,8 @@ def process_customer_message(message: str) -> dict:
         "needs_escalation": False,
         "response": "",
         "confidence": 0.0,
-        "order_id": None
+        "order_id": None,
+        "order_data": None
     }
     
     # Run the workflow
