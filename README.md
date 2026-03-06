@@ -1,6 +1,10 @@
 # E-commerce Customer Support Agent
 
-An intelligent customer support automation system built with LangGraph and powered by Google Gemini 2.5 Flash Lite.
+An intelligent customer support automation system powered by Google Gemini 2.5 Flash Lite.
+
+This repository now contains **two implementations**:
+- **True A2A implementation** (`A2A/`) - independent agents with explicit handoffs
+- **Legacy LangGraph implementation** (`langgraph/`) - graph-orchestrated workflow
 
 ## ✨ Features
 
@@ -67,9 +71,13 @@ The AI agent will look up actual data and provide accurate, context-aware respon
      GOOGLE_API_KEY=your_actual_api_key_here
      ```
 
-5. **Run the application**
+5. **Run one implementation**
    ```bash
-   python main.py
+   # True A2A (recommended)
+   python A2A/main.py
+
+   # Legacy LangGraph
+   python langgraph/main.py
    ```
 
 6. **Access the UI**
@@ -79,15 +87,50 @@ The AI agent will look up actual data and provide accurate, context-aware respon
 
 ```
 .
-├── agent.py           # LangGraph workflow and agent logic
-├── data.py            # Dummy database (orders, products, customers)
-├── main.py            # FastAPI application and API endpoints
+├── A2A/
+│   ├── agent.py       # Compatibility entrypoint (delegates to orchestrator)
+│   ├── orchestrator.py # True A2A orchestration (plain Python handoffs)
+│   ├── contracts.py   # Shared context contract between agents
+│   ├── llm_client.py  # Shared Gemini client factory
+│   ├── agents/
+│   │   ├── intent_agent.py
+│   │   ├── order_lookup_agent.py
+│   │   ├── response_agent.py
+│   │   └── escalation_agent.py
+│   ├── data.py        # Dummy database (orders, products, customers)
+│   └── main.py        # FastAPI application and API endpoints
+├── langgraph/         # Legacy LangGraph-based implementation
+│   ├── agent.py
+│   ├── data.py
+│   └── main.py
 ├── templates/         # HTML templates
 │   └── index.html     # Web UI with sample data display
 ├── requirements.txt   # Python dependencies
 ├── .env.example       # Environment variables template
-└── README.md         # This file
+└── README.md          # This file
 ```
+
+## 🆚 Two Implementations
+
+### 1) True A2A (Recommended)
+- Path: `A2A/`
+- Model: independent agents with explicit context contract handoffs
+- Orchestration: plain Python orchestrator (`A2A/orchestrator.py`)
+- Run:
+   ```bash
+   python A2A/main.py
+   ```
+
+### 2) Legacy LangGraph
+- Path: `langgraph/`
+- Model: single graph workflow implementation
+- Orchestration: LangGraph state graph
+- Run:
+   ```bash
+   python langgraph/main.py
+   ```
+
+Both implementations expose the same API endpoints and serve the same UI at `http://localhost:8000`.
 
 ## 🔌 API Endpoints
 
@@ -118,23 +161,47 @@ curl -X POST http://localhost:8000/api/support \
   -d '{"message": "Where is my order ORD-12345?"}'
 ```
 
-## How It Works
+## How It Works (A2A)
 
-The agent uses a multi-step workflow:
+The system now uses a **true A2A handoff model** with independent agents:
 
-1. **Message Reception**: Customer message is received
-2. **Intent Classification**: AI identifies the issue type and extracts order ID
-3. **Data Lookup**: System fetches real order data from database
-4. **Routing Decision**: Message is routed to appropriate handler
-5. **Response Generation**: Context-aware response is generated using real data
-6. **Escalation Check**: Determines if human intervention is needed
+1. **Intent Agent**: Classifies issue type, sentiment, confidence, and order ID
+2. **Order Lookup Agent**: Fetches matching order data from the dummy database
+3. **Response Agent**: Generates customer reply using message + order context
+4. **Escalation Agent**: Applies escalation rules for confidence/sentiment/urgency
+
+The orchestrator passes a shared `SupportContext` contract between agents in sequence.
+
+## How It Works (LangGraph - Legacy)
+
+The legacy implementation uses a LangGraph state graph with node-based orchestration:
+
+1. **classify_intent** node
+2. **route_to_handler** node
+3. **generate_response** node
+4. **check_escalation** node
+
+The graph is compiled and invoked as a single workflow execution in `langgraph/agent.py`.
 
 ## Technology Stack
 
-- **LangGraph**: Workflow orchestration
+- **A2A Workflow Layer**: Independent agents + explicit context handoffs
+- **LangGraph (legacy path)**: Graph-based workflow orchestration in `langgraph/`
 - **Google Gemini 2.5 Flash Lite**: LLM for understanding and generation
 - **FastAPI**: Backend API framework
 - **Jinja2**: Template rendering for UI
+
+## Run from Workspace Root
+
+Always run commands from the workspace root (`E-commerce-Customer-Support-Agent`) so `templates/` resolves correctly:
+
+```bash
+# True A2A
+python A2A/main.py
+
+# Legacy LangGraph
+python langgraph/main.py
+```
 
 ## License
 
