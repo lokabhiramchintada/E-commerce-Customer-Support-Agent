@@ -83,6 +83,32 @@ The AI agent will look up actual data and provide accurate, context-aware respon
 6. **Access the UI**
    - Open your browser and go to: `http://localhost:8000`
 
+## 🐳 Docker Setup
+
+You can also run the application using Docker:
+
+### Pull from Docker Hub
+```bash
+docker pull abhisigningin/a2a-backend
+```
+
+### Run the container
+```bash
+docker run -d \
+  --name a2a-backend \
+  -p 8000:8000 \
+  -e GOOGLE_API_KEY=your_api_key_here \
+  abhisigningin/a2a-backend:latest
+```
+
+### Or use Docker Compose
+```bash
+# Create .env file with GOOGLE_API_KEY
+docker-compose up -d
+```
+
+For detailed Docker setup instructions, see [DOCKER_SETUP.md](DOCKER_SETUP.md).
+
 ## Project Structure
 
 ```
