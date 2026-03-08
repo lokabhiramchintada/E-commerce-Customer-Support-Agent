@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  a2a-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: a2a-customer-support-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./A2A:/app/A2A
+      - ./templates:/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - a2a-network
+
+networks:
+  a2a-network:
+    driver: bridge
